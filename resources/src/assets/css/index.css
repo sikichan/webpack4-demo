@@ -1,0 +1,37 @@
+/* 如果不配置CSS的loader，会无法记载且报错：You may need an appropriate loader to handle this file type, currently no loaders are configured to process this fil */
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+}
+@font-face {
+  font-family: "iconfont";
+  src: url('../font/iconfont.eot');
+  src: url('../font/iconfont.eot') format('embedded-opentype'),
+    url('../font/iconfont.woff') format('woff'),
+    url('../font/iconfont.woff2') format('woff2'),
+    url('../font/iconfont.ttf') format('truetype'),
+    url('../font/iconfont.svg') format('svg');
+}
+span {
+  font-size: 28px;
+  font-family: 'iconfont';
+  color: palevioletred;
+}
+button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: pink;
+  color: #fff;
+  font-size: 20px;
+}
+img {
+  width: 100px;
+  height: 100px;
+}
+.div {
+  background-image: url('../img/avatar.jpg');
+  background-repeat: no-repeat;
+  background-size: contain;
+}
