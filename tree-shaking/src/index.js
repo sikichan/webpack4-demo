@@ -1,3 +1,3 @@
-import {add} from './math'
+import {cube} from './math'
 console.log('indexjs: ...')
 console.log('cube: ', cube(3))
