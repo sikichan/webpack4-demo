@@ -1,10 +1,5 @@
-/* 如果不配置CSS的loader，会无法记载且报错：You may need an appropriate loader to handle this file type, currently no loaders are configured to process this fil */
-* {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: none;
-}
+@import './base.css'; 
+/* 解析@import语法 需要css-loader */
 @font-face {
   font-family: "iconfont";
   src: url('../font/iconfont.eot');

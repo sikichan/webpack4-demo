@@ -5,17 +5,22 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
   entry: {
-    app: './src/index.js'
+    app: './src/index.js', // 单入口
+    // 多入口时
+    // another: './src/another.js'
+    /*
+    new HtmlWebpackPlugin({
+      template: './index.html',
+      filename: 'another.html',
+      chunks: ['another']
+    })
+    */
   },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Production'
     }),
-    new MiniCssExtractPlugin({
-      filename: 'assets/style/[name].css',
-      // chunkFilename: 'assets/style/[id].css'
-    })
   ],
   output: {
     filename: '[name].bundle.js',
@@ -24,24 +29,48 @@ module.exports = {
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src/'),
-      'img': path.resolve(__dirname, 'src/assets/img/'),
-      'css': path.resolve(__dirname, 'src/assets/css/')
     }
   },
   module: {
-    rules: [
-      // {
-      //   test: /\.css$/, // 正则匹配.css结尾的文件
-      //   use: [
-      //     'style-loader',
-      //     {
-      //       loader: 'css-loader',
-      //       options: {
-      //         modules: true
-      //       }
-      //     }
-      //   ]
-      // },
+    rules: [ // loaders 默认从右往左，从下到上执行
+      {
+        test: /\.css$/i,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader// 提取css到单独的模块
+          }, 
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [require('autoprefixer')],
+              options: {
+                outputPath: 'css/'
+              }
+            }
+          },
+        ],
+      },
+      {
+        test: /\.less$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              plugins: [require('autoprefixer')],
+              publicPath:'../' // 需要加上这个publicPath, 否则css中的background-image的URL会加上css/目录
+            }
+          },
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [require('autoprefixer')] // 自动生成浏览器前缀, 根据package.json的browserslist
+            }
+          },
+          'less-loader'
+        ]
+      },
       {
         test: /\.(png|jpg|gif|jpeg|svg)$/i,
         use: [
@@ -50,24 +79,14 @@ module.exports = {
             options: {
               limit: 8192, // 图片 8kb 之内会转化成data:url
               mimetype: 'image/png', // data:image/png;base64
-              name: 'assets/img/[name].[ext]'
+              outputPath: 'img/'
             }
           }
         ]
       },
       {
-        test: /\.css$/i,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              esModule: true, // 使用ES模块
-            }
-          }, 
-          'css-loader'
-        ],
-      },
-      
+        // test: //
+      }
     ]
   },
   stats: {

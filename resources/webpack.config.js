@@ -32,15 +32,14 @@ module.exports = {
       {
         test: /\.css$/, // 正则匹配.css结尾的文件
         use: [
-          'style-loader',
-          'css-loader'
+          'style-loader',  // 把css插入到html的head标签中
+          'css-loader' // 识别@import的语法，和js里import或require css
         ]
       },
       // {
       //   test: /\.(png|jpg|gif|jpeg|svg)$/i,
       //   use: ['file-loader']
       // },
-      
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
         use: ['file-loader']
