@@ -32,5 +32,11 @@ module.exports = {
     rules: [
     ]
   },
-  devtool: 'inline-source-map' // 不要用于生产环境！
+  devtool: 'inline-source-map', // 不要用于生产环境！
+  // 通过来自 webpack-dev-server 的这些选项，能够用多种方式改变其行为
+  devServer: {
+    contentBase: path.join(__dirname, 'dist'),
+    compress: true,
+    port: 9000
+  }
 }
