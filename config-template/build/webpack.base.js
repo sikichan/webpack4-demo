@@ -14,16 +14,16 @@ module.exports = {
     chunkFilename: 'js/[name].[contenthash:6]_chunk.js',
     // publicPath 为所有资源公共路径的前缀，用于生产环境 
     // publicPath: '/',
-    library: '[name]', // 整个库向外暴露的变量名
+    // library: '[name]', // 整个库向外暴露的变量名
     // 变量名添加到那个全局变量上，或者以哪种方式暴露出去
-    libraryTarget: 'window' // 'global' | 'commonjs' | 'amd' 
+    // libraryTarget: 'window' // 'global' | 'commonjs' | 'amd' 
   },
   module: {
     rules: [
       // yarn add --dev eslint eslint-loader
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: /(node_modules|bower_components)/,
         loader: 'eslint-loader',
         enforce: 'pre'
       },
@@ -53,8 +53,24 @@ module.exports = {
           // yarn add --dev @babel/core babel-loader @babel/preset-env
           {
             test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader'
+            exclude: /(node_modules|bower_components)/,
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                [
+                  '@babel/preset-env',
+                  {
+                    targets: {
+                      esmodules: true
+                    },
+                    useBuiltIns: 'usage',
+                    corejs: {
+                      version: 3 // yarn add core-js@3
+                    }
+                  }
+                ]
+              ]
+            }
           },
           {
             exclude: /\.(css|less|js|html)/,

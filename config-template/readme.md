@@ -52,8 +52,3 @@ import(/*webpackChunkName: 'math'*/'./math.js').then(({add}) => (console.log(add
 ```js
 /* webpackChunkName: '', webpackPrefetch: true */
 ```
-
-    "parserOptions": {
-      "sourceType": "module",
-      "ecmaVersion": 2015
-    },
