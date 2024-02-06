@@ -4,6 +4,7 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 module.exports = {
   mode: 'production',
   // entry: path.resolve(__dirname, 'src/index.js'),
+  // context: path.resolve(__dirname, 'app'),
   // 分离入口
   entry: {
     app: './src/index.js',
@@ -15,8 +16,8 @@ module.exports = {
     // 根据分离入口动态生成bundle名称
     filename: '[name]_[contenthash:6].bundle.js'
   },
-  resolve: {
-    alias: {
+  resolve: { // 解析
+    alias: { // 创建 import 或 require 的别名，来确保模块引入变得更简单
       '@': path.resolve('src/assets/')
     }
   },
@@ -47,7 +48,12 @@ module.exports = {
       {
         // exclude: /\.(css|less|js|html)$/,
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: ['file-loader'] // 将资源文件复制并原样打包输出
+        // use: ['file-loader'] // 将资源文件复制并原样打包输出
+        loader: 'file-loader',
+        options: {
+          // name: '[path][contenthash].[ext]'
+          outputPath: 'assests'
+        }
       },
       {
         test: /\.(png|jpg|gif|jpeg|svg)$/i,
@@ -55,7 +61,9 @@ module.exports = {
           {
             loader: 'url-loader', // 依赖于file-loader
             options: {
-              limit: 8192, // 图片 小于8kb 会转化成data:url，可以减少请求数
+              name: '[contenthash].[ext]',
+              outputPath: 'assests/images',
+              limit: 8 * 1024, // 图片 小于8kb 会转化成data:url，可以减少请求数
               mimetype: 'image/png' // data:image/png;base64
             }
           }

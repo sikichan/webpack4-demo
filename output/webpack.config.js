@@ -16,8 +16,7 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   plugins: [
-    new CleanWebpackPlugin({
-    }),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './index.html'
     })

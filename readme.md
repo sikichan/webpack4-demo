@@ -83,3 +83,119 @@ output: {
 }
 ```
 
+# 2023 9.25
+## webpack 静态模块打包工具, as to webpack, every source are modules
+###webpack 主要作用
+1. 模块打包。把不同模块文件打包整合在一起
+2. 编译兼容。通过webpack *loader* 机制，可以对代码做polyfill, 还可以编译转换.less, .sass, .vue, .jsx等浏览器无法识别的格式文件
+3. 能力扩展。通过*Plugin*机制，实现进一步按需加载，代码压缩等，提高自动化程度，工程效率
+
+### webpack 构建流程
+1. 初始化：启动构建，读取合并配置参数，加载Plugin，实例化Compiler
+2. 编译：从 entry 出发，针对每个module 串行调用对应的loader去翻译文件内容，再找到该module依赖的module，递归地进行编译处理
+3. 输出：将编译后的 module 组合成 chunk, 将 chunk 转换成文件，输出到文件系统中
+
+### 常用loader, loader 是从后往前执行
+- image-loader
+- babel-loader
+- file-loader 把文件输出到一个文件中，hash值不变可以缓存
+- url-loader 设置一个阈值limit, 大于阈值交给file-loader处理，小于阈值时返回base64到图片或字体
+- css-loader 支持模块化、压缩、文件导入 @import
+- style-loader 编译完css 后挂载到页面 style标签上
+- less-loader .less
+- sass-loader .scss/.sass
+- eslint-loader 通过eslint检查js代码
+- postcss-loader 扩展css语法，配合autoprefix 插件自动补齐css3前缀
+- vue-loader
+- ts-loader
+
+### 常见plugin
+HtmlWebpackPlugin 创建html模板
+CleanWebpackPlugin 清理目录
+MiniCssExtractPlugin 分离样式文件，提取css为独立文件，支持按需加载
+
+## Difference between loader and plugins ?
+*plugin* 插件，扩展webpack的功能，贯穿整个webpack运行的生命周期，webpack会广播出很多事件，然后plugin会监听到事件做出相应的输出
+*loader* 本质是一个函数，对接受到的内容进行转换，编译，理解为翻译官。因为webapck本来只认识javascript, json
+
+loader 在 module.rules 中配置
+module: {
+  rules: [
+    {
+      test: ``,
+      loader: '',
+      options: {
+      }
+    },
+    {
+      test: ``,
+      use: [loaders]
+    }
+  ]
+},
+plugins: [
+  new HtmlWebpackPlugin()
+]
+
+### babel-loader babel/preset-env babel-polyfill babel-transform-runtime ?
+babel-loader 把babel 和 webpack连接上相当于桥梁
+babel/preset-env 预设，能把es6语法翻译成 es5 （Generator, Promsise不行）
+babel-polyfill 支持 Generator, Promsise，会污染全局环境
+babel-transform-runtime 提供沙箱环境，不会污染全局环境
+
+## webpack如何优化构建速度和体积？
+1. Tree Shaking 源码里没使用到的代码不打包，可以减少打包体积，加快速度
+```shell
+optimization: {
+  usedExports: true,
+  sideEffects: true
+}
+
+package.json
+{
+  sideEffects: ['*.css']
+}
+```
+
+2. 懒加载
+```js
+import('lodash').then(_ => {
+  _.debounce(fn)
+})
+
+const Foo = () => import('./Foo.vue')
+```
+
+3. code split 代码分割，优化构建速度
+3.1 enter 手动分离入口文件
+3.2 webpack 的 splitChunks
+```js
+optimization: {
+  splitChunks: {
+    chunks: 'all'
+  }
+}
+
+3.3 css split
+plugins: [
+  new MiniCssExtractPlugin({
+    filename: "css/[name].[contenthash:6].css"
+  })
+]
+```
+3.4 file-loader
+name: [path][contenthash].[ext]
+=> hash值不变，浏览器可以使用缓存内容
+
+3.5 url-loader
+limit: 8 * 1024
+小于阈值，会转换成base64，减少http请求数
+
+## webpack 热更新原理 hmr
+webpack-dev-server 基于express的web server, server 和 browser 之间维护了一个websocket， 当本地资源发生变化时，server会向browser 推送更新，并在带上构建时的hash， 在客户端与上一次资源进行对比。
+```js
+devServer: {
+  hot: true
+}
+```
+## proxy 
